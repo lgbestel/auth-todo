@@ -1,4 +1,4 @@
-import { Alert } from 'react-native'
+import { ActivityIndicator, Alert } from 'react-native'
 import React, { useState } from 'react'
 import { firebaseAuth } from '../../../firebaseConfig';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
@@ -36,8 +36,15 @@ const Login = () => {
     <Container>
       <Input placeholder='E-mail' value={email} onChangeText={(text: string) => setEmail(text)}/>
       <Input placeholder='Pasword'value={password} onChangeText={(text: string) => setPassword(text)} secureTextEntry/>
-      <Button title='Log In' onPress={handleLogin}/>
-      <Button title='Sign In' onPress={handleSignUp}/>
+      {
+        loading ?
+        <ActivityIndicator color='blue' />
+        : <>
+          <Button title='Log In' onPress={handleLogin}/>
+          <Button title='Sign In' onPress={handleSignUp}/>
+        </>
+      }
+      
     </Container>
   )
 }

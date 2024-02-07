@@ -1,6 +1,6 @@
 import styled from "styled-components/native";
 
-export const Container = styled.View`
+export const Container = styled.KeyboardAvoidingView`
   background-color: #fff;
   border-radius: 10px;
   flex: 1;
