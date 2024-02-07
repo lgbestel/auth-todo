@@ -1,14 +1,15 @@
-import { View, Text, Alert } from 'react-native'
+import { Alert } from 'react-native'
 import React, { useState } from 'react'
 import { firebaseAuth } from '../../../firebaseConfig';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
+import { Button, Container, Input, Text } from './styles';
 
 const Login = () => {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
 
-  const handleSignIn = async () => {
+  const handleLogin = async () => {
     setLoading(true);
     try {
       const response = await signInWithEmailAndPassword(firebaseAuth, email, password);
@@ -32,9 +33,12 @@ const Login = () => {
   }
 
   return (
-    <View>
-      <Text>Login</Text>
-    </View>
+    <Container>
+      <Input placeholder='E-mail' value={email} onChangeText={(text: string) => setEmail(text)}/>
+      <Input placeholder='Pasword'value={password} onChangeText={(text: string) => setPassword(text)} secureTextEntry/>
+      <Button title='Log In' onPress={handleLogin}/>
+      <Button title='Sign In' onPress={handleSignUp}/>
+    </Container>
   )
 }
 
