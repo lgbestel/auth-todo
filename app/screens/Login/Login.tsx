@@ -12,7 +12,7 @@ const Login = () => {
   const handleLogin = async () => {
     setLoading(true);
     try {
-      const response = await signInWithEmailAndPassword(firebaseAuth, email, password);
+      await signInWithEmailAndPassword(firebaseAuth, email, password);
     } catch (error: any) {
       console.log('Sign in failed: ', error.message)
     } finally {
@@ -23,7 +23,7 @@ const Login = () => {
   const handleSignUp = async () => {
     setLoading(true);
     try {
-      const response = await createUserWithEmailAndPassword(firebaseAuth, email, password);
+      await createUserWithEmailAndPassword(firebaseAuth, email, password);
       Alert.alert('You are now signed up! Proceed to login')
     } catch (error: any) {
       console.log('Sign in failed: ', error.message)
