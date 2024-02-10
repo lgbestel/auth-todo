@@ -6,6 +6,9 @@ import { DocumentData, DocumentReference, addDoc, collection, deleteDoc, doc, on
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { AntDesign } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import authSlice from '../../store/slices/authSlice';
+import todoSlice from '../../store/slices/todosSlice';
 
 interface ITask {
   id: string,
@@ -14,7 +17,10 @@ interface ITask {
 }
 
 const Todo = () => {
-  const [tasks, setTasks] = useState<ITask[]>([]);
+  const dispatch = useAppDispatch();
+  const user = useAppSelector(state => state.auth.user);
+  const todos = useAppSelector(state => state.todo.todos);
+
   const [newTask, setNewTask] = useState<string>('');
   const [selectedTaskId, setSelectedTaskId] = useState<string>('');
   const [taskToUpdate, setTaskToUpdate] = useState<string>('');
@@ -26,21 +32,23 @@ const Todo = () => {
       next: (snapshot) => {
         const todos: ITask[] = [];
         snapshot.docs.forEach(doc => {
-          todos.push({
-            id: doc.id,
-            ...doc.data(),
-          } as ITask)
+          console.log("🚀 ~ useEffect ~ doc:", doc)
+          /* if (doc.userId === user?.uid) { */
+            todos.push({
+              id: doc.id,
+              ...doc.data(),
+            } as ITask)
+          /* }  */         
         });
-        setTasks(todos)
+        dispatch(todoSlice.actions.setTodos(todos))
       }
     });
-
     return () => unsubscribe();
   }, [])
 
   const handleAddTask = async () => {
     if (!newTask) return Alert.alert('Please type a valid task')
-    await addDoc(collection(fireStore, 'todos'), { text: newTask, completed: false  });
+    await addDoc(collection(fireStore, 'todos'), { text: newTask, completed: false, userId: user?.uid });
     setNewTask('')
   };
 
@@ -104,7 +112,10 @@ const Todo = () => {
     )
   }
 
-  const handleLogout = () => firebaseAuth.signOut();
+  const handleLogout = () => {
+    firebaseAuth.signOut();
+    dispatch(authSlice.actions.clear());
+  }
 
   return (
     <KeyboardAvoidingView style={{flex: 1, alignItems: 'center', justifyContent: 'center' }}>
@@ -118,7 +129,7 @@ const Todo = () => {
         <Button title='Add Task' onPress={handleAddTask}/>
       </View>
       <FlatList
-        data={tasks}
+        data={todos}
         keyExtractor={(task: ITask) => task.id}
         renderItem={renderTask}
       />      

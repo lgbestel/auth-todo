@@ -6,16 +6,19 @@ import Todo from './app/screens/Todo/Todo';
 import { User, onAuthStateChanged } from 'firebase/auth';
 import { useEffect, useState } from 'react';
 import { firebaseAuth } from './firebaseConfig';
+import { useAppDispatch, useAppSelector } from './app/store/hooks';
+import authSlice from './app/store/slices/authSlice';
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
-  const [user, setUser] = useState<User|null>(null);
+  const dispatch = useAppDispatch();
+  const user = useAppSelector((state) => state.auth.user)
 
   useEffect(() => {
     onAuthStateChanged(firebaseAuth, (user) => {
       console.log('User email: ', user?.email);
-      setUser(user);
+      dispatch(authSlice.actions.setUser(user));
     })
   }, [])
 
