@@ -1,24 +1,30 @@
 import { ActivityIndicator, Alert } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { firebaseAuth } from '../../../firebaseConfig';
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
-import { Button, Container, Input, Text } from './styles';
+import { createUserWithEmailAndPassword, onAuthStateChanged, signInWithEmailAndPassword } from 'firebase/auth';
+import { LoginButton, Container, Input, Text, ButtonsContainer } from './styles';
+import { useAppDispatch } from '../../store/hooks';
+import authSlice from '../../store/slices/authSlice';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../../../App';
+import { FontAwesome5 } from '@expo/vector-icons';
 
-const Login = () => {
+type Props = NativeStackScreenProps<RootStackParamList, 'Login'>;
+
+const Login: React.FC<Props> = (props) => {
+  const dispatch = useAppDispatch();
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
 
-  const handleLogin = async () => {
-    setLoading(true);
-    try {
-      await signInWithEmailAndPassword(firebaseAuth, email, password);
-    } catch (error: any) {
-      console.log('Sign in failed: ', error.message)
-    } finally {
-      setLoading(false)
-    }
-  }
+  useEffect(() => {
+    onAuthStateChanged(firebaseAuth, (user) => {
+      if (user) {
+        dispatch(authSlice.actions.setUser(user))
+        props.navigation.replace('Todo');
+      }
+    })
+  }, [])
 
   const handleSignUp = async () => {
     setLoading(true);
@@ -26,7 +32,19 @@ const Login = () => {
       await createUserWithEmailAndPassword(firebaseAuth, email, password);
       Alert.alert('You are now signed up! Proceed to login')
     } catch (error: any) {
-      console.log('Sign in failed: ', error.message)
+      Alert.alert('Sign up failed', error.message)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleLogin = async () => {
+    setLoading(true);
+    try {
+      const credentials = await signInWithEmailAndPassword(firebaseAuth, email, password);
+      dispatch(authSlice.actions.setUser(credentials.user))
+    } catch (error: any) {
+      Alert.alert('Sign in failed', error.message)
     } finally {
       setLoading(false)
     }
@@ -34,15 +52,20 @@ const Login = () => {
 
   return (
     <Container>
-      <Input placeholder='E-mail' value={email} onChangeText={(text: string) => setEmail(text)}/>
-      <Input placeholder='Pasword'value={password} onChangeText={(text: string) => setPassword(text)} secureTextEntry/>
+      <FontAwesome5 name="tasks" size={40} color="black" />
+      <Input placeholder='E-mail' value={email} autoCapitalize='none' onChangeText={(text: string) => setEmail(text)}/>
+      <Input placeholder='Pasword'value={password} autoCapitalize='none' onChangeText={(text: string) => setPassword(text)} secureTextEntry/>
       {
         loading ?
-        <ActivityIndicator color='blue' />
-        : <>
-          <Button title='Log In' onPress={handleLogin}/>
-          <Button title='Sign In' onPress={handleSignUp}/>
-        </>
+        <ActivityIndicator color='#088F8F' style={{ marginTop: 5 }} />
+        : <ButtonsContainer>
+          <LoginButton onPress={handleLogin}>
+            <Text>LOGIN</Text>
+          </LoginButton>
+          <LoginButton onPress={handleSignUp}>
+            <Text>SIGN UP</Text>
+          </LoginButton>
+        </ButtonsContainer>
       }
       
     </Container>
