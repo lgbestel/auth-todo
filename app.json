@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "authTodo",
-    "slug": "authTodo",
+    "name": "Todo",
+    "slug": "Todo",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -21,10 +21,16 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.luizgbestel.Todo"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "5b28d821-d369-4b7a-a8b9-72272a5ec509"
+      }
     }
   }
 }
