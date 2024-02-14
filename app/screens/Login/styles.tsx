@@ -17,10 +17,15 @@ export const Input = styled.TextInput`
   padding-vertical: 4px;
 `
 
-export const Button = styled.Button`
-  background-color: light-blue;
-  border-radius: 30px;
-  width: 50%;
+export const LoginButton = styled.TouchableOpacity`
+  background-color: #088F8F;
+  border-radius: 10px;
+  padding-horizontal: 8px;
+  padding-vertical: 4px;
+  width: 30%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `
 
 export const Text = styled.Text`

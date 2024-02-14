@@ -1,6 +1,6 @@
-import { View, Text, FlatList, TextInput, TouchableOpacity, Alert, KeyboardAvoidingView } from 'react-native'
+import { FlatList, TouchableOpacity, Alert, } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import { Button } from './styles';
+import { Text, Input, Container, TodoButton, InputContainer, TaskContainer } from './styles';
 import { fireStore, firebaseAuth } from '../../../firebaseConfig';
 import { DocumentData, DocumentReference, addDoc, collection, deleteDoc, doc, onSnapshot, updateDoc } from 'firebase/firestore';
 import Ionicons from '@expo/vector-icons/Ionicons';
@@ -9,14 +9,17 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import authSlice from '../../store/slices/authSlice';
 import todoSlice from '../../store/slices/todosSlice';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../../../App';
 
+type Props = NativeStackScreenProps<RootStackParamList, 'Todo'>;
 interface ITask {
   id: string,
   text: string,
   completed: boolean,
 }
 
-const Todo = () => {
+const Todo: React.FC<Props> = (props) => {
   const dispatch = useAppDispatch();
   const user = useAppSelector(state => state.auth.user);
   const todos = useAppSelector(state => state.todo.todos);
@@ -32,7 +35,6 @@ const Todo = () => {
       next: (snapshot) => {
         const todos: ITask[] = [];
         snapshot.docs.forEach(doc => {
-          console.log("🚀 ~ useEffect ~ doc:", doc)
           /* if (doc.userId === user?.uid) { */
             todos.push({
               id: doc.id,
@@ -65,11 +67,21 @@ const Todo = () => {
     await updateDoc(taskRef, { completed: !task.completed})
   }
 
+  const handleLogout = () => {
+    try {
+      firebaseAuth.signOut();
+      props.navigation.navigate('Login');
+      dispatch(authSlice.actions.clear());      
+    } catch (error: any) {
+      Alert.alert('Error loggin out', error.message);
+    }
+  }
+
   const renderTask = ({ item }: any) => {
     const taskRef = doc(fireStore, 'todos/' + item.id); 
       
     return (
-      <View style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: 6, flexDirection: 'row', padding: 7}}>
+      <TaskContainer>
         <TouchableOpacity onPress={() => toggleTaskCompletion(taskRef, item)}>
           {
             item.completed ?
@@ -80,10 +92,9 @@ const Todo = () => {
         </TouchableOpacity>
         {
           selectedTaskId === item.id ? (
-            <TextInput
+            <Input
               value={taskToUpdate}
               onChangeText={(text) => setTaskToUpdate(text)}
-              style={{ backgroundColor: '#999999', paddingHorizontal: 5, paddingVertical: 3, borderRadius: 5, width: '70%', color: '#fff'}}
             />
           )
           : <Text style={{ width: '70%' }}>{item.text}</Text>
@@ -108,33 +119,31 @@ const Todo = () => {
             </>            
           )
         }
-      </View>
+      </TaskContainer>
     )
   }
 
-  const handleLogout = () => {
-    firebaseAuth.signOut();
-    dispatch(authSlice.actions.clear());
-  }
-
   return (
-    <KeyboardAvoidingView style={{flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 5 }}>
-        <TextInput
+    <Container>
+      <InputContainer>
+        <Input
           placeholder="Add a new task"
           value={newTask}
           onChangeText={(text) => setNewTask(text)}
-          style={{ backgroundColor: '#999999', paddingHorizontal: 5, paddingVertical: 3, borderRadius: 5, width: '50%', color: '#fff' }}
         />
-        <Button title='Add Task' onPress={handleAddTask}/>
-      </View>
+        <TodoButton onPress={handleAddTask}>
+          <Text>ADD TASK</Text>
+        </TodoButton>
+      </InputContainer>
       <FlatList
         data={todos}
         keyExtractor={(task: ITask) => task.id}
         renderItem={renderTask}
       />      
-      <Button title='Logout' onPress={handleLogout} color='grey'/>
-    </KeyboardAvoidingView>
+      <TodoButton onPress={handleLogout}>
+        <Text>LOGOUT</Text>
+      </TodoButton>
+    </Container>
   )
 }
 
