@@ -1,7 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+interface ITask {
+  id: string,
+  text: string,
+  completed: boolean,
+}
 export interface InitialStateTodo {
-  todos: any[],
+  todos: ITask[],
 }
 
 export const INITIAL_STATE: InitialStateTodo = {
@@ -12,7 +17,7 @@ const todoSlice = createSlice({
   name: 'todo',
   initialState: INITIAL_STATE,
   reducers: {
-    setTodos: (state: InitialStateTodo, action) => state.todos = action.payload,
+    setTodos: (state: InitialStateTodo, action) => void(state.todos = action.payload),
     clear: () => INITIAL_STATE,
   },
 })
