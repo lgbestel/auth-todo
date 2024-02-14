@@ -20,7 +20,7 @@ export default function App() {
       <NavigationContainer>
         <Stack.Navigator initialRouteName='Login'>
           <Stack.Screen name='Login' component={Login} options={{ headerShown: false }} />        
-          <Stack.Screen name='Todo' component={Todo} options={{ headerShown: false }} />
+          <Stack.Screen name='Todo' component={Todo} />
         </Stack.Navigator>
       </NavigationContainer>
     </Provider>
