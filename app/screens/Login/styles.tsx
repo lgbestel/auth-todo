@@ -6,22 +6,30 @@ export const Container = styled.KeyboardAvoidingView`
   flex: 1;
   align-items: center;
   justify-content: center;
-  gap: 5px;
+  gap: 10px;
 `
 
 export const Input = styled.TextInput`
   border: grey;
   border-radius: 10px;
-  width: 50%;
-  padding-horizontal: 8px;
-  padding-vertical: 4px;
+  width: 60%;
+  padding-horizontal: 20px;
+  padding-vertical: 10px;
+`
+
+export const ButtonsContainer = styled.View`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  width: 100%;
 `
 
 export const LoginButton = styled.TouchableOpacity`
   background-color: #088F8F;
   border-radius: 10px;
-  padding-horizontal: 8px;
-  padding-vertical: 4px;
+  padding-horizontal: 20px;
+  padding-vertical: 10px;
   width: 30%;
   display: flex;
   align-items: center;
