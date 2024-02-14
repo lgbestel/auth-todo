@@ -70,7 +70,7 @@ const Todo: React.FC<Props> = (props) => {
   const handleLogout = () => {
     try {
       firebaseAuth.signOut();
-      props.navigation.navigate('Login');
+      props.navigation.replace('Login');
       dispatch(authSlice.actions.clear());      
     } catch (error: any) {
       Alert.alert('Error loggin out', error.message);

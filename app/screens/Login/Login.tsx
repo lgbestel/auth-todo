@@ -18,7 +18,7 @@ const Login: React.FC<Props> = (props) => {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(firebaseAuth, (user) => {
-      if(user) props.navigation.navigate('Todo');
+      if(user) props.navigation.replace('Todo');
     })
     return unsubscribe;
   }, [])
