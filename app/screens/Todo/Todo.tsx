@@ -1,6 +1,6 @@
 import { FlatList, TouchableOpacity, Alert, } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import { Text, Input, Container, TodoButton, InputContainer, TaskContainer } from './styles';
+import { Text, Input, Container, TodoButton, InputContainer, TaskContainer, ButtonText, TaskInput } from './styles';
 import { fireStore, firebaseAuth } from '../../../firebaseConfig';
 import { DocumentData, DocumentReference, addDoc, collection, deleteDoc, doc, onSnapshot, updateDoc } from 'firebase/firestore';
 import Ionicons from '@expo/vector-icons/Ionicons';
@@ -35,12 +35,12 @@ const Todo: React.FC<Props> = (props) => {
       next: (snapshot) => {
         const todos: ITask[] = [];
         snapshot.docs.forEach(doc => {
-          /* if (doc.userId === user?.uid) { */
+          if (doc.data().userId === user?.uid) {
             todos.push({
               id: doc.id,
               ...doc.data(),
             } as ITask)
-          /* }  */         
+          }          
         });
         dispatch(todoSlice.actions.setTodos(todos))
       }
@@ -77,7 +77,7 @@ const Todo: React.FC<Props> = (props) => {
     }
   }
 
-  const renderTask = ({ item }: any) => {
+  const renderTask = ({ item }: { item: ITask}) => {
     const taskRef = doc(fireStore, 'todos/' + item.id); 
       
     return (
@@ -92,7 +92,7 @@ const Todo: React.FC<Props> = (props) => {
         </TouchableOpacity>
         {
           selectedTaskId === item.id ? (
-            <Input
+            <TaskInput
               value={taskToUpdate}
               onChangeText={(text) => setTaskToUpdate(text)}
             />
@@ -132,16 +132,16 @@ const Todo: React.FC<Props> = (props) => {
           onChangeText={(text) => setNewTask(text)}
         />
         <TodoButton onPress={handleAddTask}>
-          <Text>ADD TASK</Text>
+          <ButtonText>ADD TASK</ButtonText>
         </TodoButton>
       </InputContainer>
-      <FlatList
-        data={todos}
-        keyExtractor={(task: ITask) => task.id}
-        renderItem={renderTask}
-      />      
+        <FlatList
+          data={todos}
+          keyExtractor={(task: ITask) => task.id}
+          renderItem={renderTask}
+        />      
       <TodoButton onPress={handleLogout}>
-        <Text>LOGOUT</Text>
+        <ButtonText>LOGOUT</ButtonText>
       </TodoButton>
     </Container>
   )
